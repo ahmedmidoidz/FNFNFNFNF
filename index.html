@@ -1,0 +1,312 @@
+
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>SpendWise | Serene Earth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Polyfill for process.env to prevent runtime crashes if not built with Vite env replacement
+      window.process = window.process || { env: { API_KEY: '' } };
+      
+      window.tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              // REVISED: Warmer, Darker 'Sand' Palette for Light Mode (No bright whites)
+              slate: {
+                50: '#EFEDE6', // Much darker cream (Old Paper) - Was #F5F5F0
+                100: '#E6E4DC', // Base Sand Color - Was #EBEAE4
+                200: '#D6D3C9', // Darker Border
+                300: '#C4C0B6',
+                400: '#A39F94',
+                500: '#7D786F',
+                600: '#5C5852',
+                700: '#45423E',
+                800: '#2E2B29', // Dark Warm Brown
+                900: '#1C1917', // Main Dark Background (Warm Charcoal)
+                950: '#12100F', 
+              },
+              primary: {
+                50: 'var(--color-primary-50)',
+                100: 'var(--color-primary-100)',
+                200: 'var(--color-primary-200)',
+                300: 'var(--color-primary-300)',
+                400: 'var(--color-primary-400)',
+                500: 'var(--color-primary-500)', 
+                600: 'var(--color-primary-600)',
+                700: 'var(--color-primary-700)',
+                800: 'var(--color-primary-800)',
+                900: 'var(--color-primary-900)',
+              },
+              brand: {
+                mint: 'var(--color-primary-500)', 
+                royal: '#5C5852', 
+                heat: '#A65D57', 
+                amber: '#D99F59', 
+                obsidian: '#2E2B29', 
+                surface: {
+                  light: '#EFEDE6', // Darker Cream
+                  dark: '#1C1917',  
+                  elevated: '#2E2B29' 
+                }
+              }
+            },
+            fontFamily: {
+              display: ['Inter', 'Tajawal', 'sans-serif'],
+            },
+            borderRadius: {
+              'super': '2.0rem',
+              'inner': '1.25rem',
+            },
+            boxShadow: {
+              'soft': '0 4px 20px -2px rgba(92, 88, 82, 0.08)', // Darker shadow for new bg
+              'heavy': '0 25px 50px -12px rgba(46, 43, 41, 0.35)', 
+              'neon': '0 0 20px var(--color-primary-glow)', 
+              'premium': '0 20px 40px -5px rgba(92, 88, 82, 0.1)',
+              'glass': '0 8px 30px -5px rgba(0, 0, 0, 0.06)'
+            },
+            animation: {
+              'float': 'float 6s ease-in-out infinite',
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'blob': 'blob 20s infinite',
+            },
+            keyframes: {
+              float: {
+                '0%, 100%': { transform: 'translateY(0)' },
+                '50%': { transform: 'translateY(-10px)' },
+              },
+              blob: {
+                '0%': { transform: 'translate(0px, 0px) scale(1)' },
+                '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+                '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+                '100%': { transform: 'translate(0px, 0px) scale(1)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+      :root {
+        /* Default Warm Earth Palette */
+        --color-primary-50: #fbf8f4;
+        --color-primary-100: #f5efe6;
+        --color-primary-200: #eadbc8;
+        --color-primary-300: #dec0a3;
+        --color-primary-400: #cfa07e;
+        --color-primary-500: #8C6A4B;
+        --color-primary-600: #9f6b46;
+        --color-primary-700: #845536;
+        --color-primary-800: #6b452e;
+        --color-primary-900: #573a28;
+        --color-primary-glow: rgba(140, 106, 75, 0.3);
+        
+        /* Adjusted Glass Variables: Less White, More Sand */
+        --glass-bg: rgba(240, 238, 232, 0.85); /* Darker/Warmer, not pure white */
+        --glass-border: #D6D3C9; 
+        --glass-blur: 20px;
+        --glass-blur-heavy: 30px;
+        --glass-blur-input: 12px;
+      }
+
+      .privacy-blur { filter: blur(14px); pointer-events: none; transition: filter 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      
+      body { 
+        font-family: 'Tajawal', 'Inter', sans-serif;
+        background-color: #E6E4DC; /* Stone/Sand (Significantly darker than white) */
+        color: #45423E; /* Dark Grey-Brown */
+        transition: background-color 0.5s ease, color 0.5s ease;
+        -webkit-tap-highlight-color: transparent;
+        overflow-x: hidden;
+      }
+      
+      .dark body { 
+        background-color: #1C1917; /* Warm Charcoal Brown (Unchanged) */
+        color: #E7E5E4; 
+      }
+      
+      /* --- DYNAMIC CARD STYLES --- */
+      
+      /* Default Glass - Tinted Sand */
+      .glass {
+        background: var(--glass-bg);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--glass-border);
+        box-shadow: 0 4px 10px -2px rgba(0, 0, 0, 0.05); /* Softer shadow */
+      }
+      .dark .glass {
+        background: rgba(41, 37, 36, 0.65); /* Stone 800 with opacity */
+        border: 1px solid rgba(255, 255, 255, 0.06);
+        box-shadow: 0 4px 30px rgba(0, 0, 0, 0.2);
+      }
+
+      /* Heavy Glass (Cards/Modals) - Solid Paper Look */
+      .glass-heavy {
+        background: rgba(245, 243, 239, 0.95); /* Nearly solid Paper Color */
+        backdrop-filter: blur(var(--glass-blur-heavy));
+        -webkit-backdrop-filter: blur(var(--glass-blur-heavy));
+        border: 1px solid #D6D3C9; 
+        box-shadow: 0 10px 25px -5px rgba(92, 88, 82, 0.08);
+      }
+      .dark .glass-heavy {
+        background: rgba(41, 37, 36, 0.90); /* Solid Warm Dark */
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.5);
+      }
+
+      /* Input Field - Darker Inner Shadow */
+      .glass-input {
+        background: #F2F0E9; /* Off-white, not pure white */
+        border: 1px solid #D6D3C9;
+        backdrop-filter: blur(var(--glass-blur-input));
+        -webkit-backdrop-filter: blur(var(--glass-blur-input));
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.03);
+      }
+      .glass-input:focus {
+        background: #F9F8F6;
+        border-color: var(--color-primary-500);
+        box-shadow: 0 0 0 1px var(--color-primary-500);
+      }
+      .dark .glass-input {
+        background: rgba(28, 25, 23, 0.5); 
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: none;
+      }
+      .dark .glass-input:focus {
+        background: rgba(28, 25, 23, 0.9);
+        border-color: var(--color-primary-500);
+      }
+
+      /* Wallpaper Layer */
+      #app-wallpaper {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -3;
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        transform: scale(1.0); 
+        transition: none;
+      }
+
+      /* Fixed Blur Overlay Layer */
+      #wallpaper-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        pointer-events: none;
+        display: none;
+        backdrop-filter: blur(30px);
+        -webkit-backdrop-filter: blur(30px);
+        background-color: rgba(230, 228, 220, 0.85); /* Sand tint */
+        transition: backdrop-filter 0.3s ease;
+      }
+      .dark #wallpaper-overlay {
+        background-color: rgba(28, 25, 23, 0.75); 
+      }
+
+      /* Animated Background Blobs - WARM TONES */
+      .blob-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -1;
+        overflow: hidden;
+        pointer-events: none;
+      }
+      .blob {
+        position: absolute;
+        filter: blur(100px);
+        opacity: 0.5; /* Increased opacity slightly for visibility against darker bg */
+        animation: blob 25s infinite;
+        border-radius: 40% 60% 50% 50% / 40% 50% 60% 50%;
+      }
+      .dark .blob { opacity: 0.2; }
+
+      /* --- SCROLLBAR --- */
+      ::-webkit-scrollbar { width: 6px; height: 6px; }
+      ::-webkit-scrollbar-track { background: transparent; }
+      ::-webkit-scrollbar-thumb { background: rgba(163, 159, 148, 0.5); border-radius: 10px; }
+      .dark ::-webkit-scrollbar-thumb { background: rgba(87, 83, 78, 0.5); }
+      ::-webkit-scrollbar-thumb:hover { background: rgba(125, 120, 111, 0.8); }
+
+      @keyframes slideUp {
+        from { transform: translateY(20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+      }
+      .animate-slide-up { animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+      
+      input[type=range] { -webkit-appearance: none; background: transparent; }
+      input[type=range]::-webkit-slider-runnable-track { 
+        height: 6px; 
+        background: rgba(163, 159, 148, 0.5); 
+        border-radius: 3px; 
+        transition: background 0.3s;
+      }
+      .dark input[type=range]::-webkit-slider-runnable-track { background: rgba(68, 64, 60, 0.5); }
+      
+      input[type=range]::-webkit-slider-thumb { 
+        -webkit-appearance: none; 
+        height: 20px; 
+        width: 20px; 
+        border-radius: 50%; 
+        background: var(--color-primary-500); 
+        cursor: pointer; 
+        margin-top: -7px; 
+        border: 4px solid #E6E4DC; 
+        box-shadow: 0 4px 10px rgba(0,0,0,0.15); 
+        transition: transform 0.1s;
+      }
+      input[type=range]::-webkit-slider-thumb:active { transform: scale(1.2); }
+      .dark input[type=range]::-webkit-slider-thumb { border-color: #292524; }
+
+      .dir-ltr { direction: ltr; }
+    </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.3",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
+    "react/": "https://esm.sh/react@^19.2.3/",
+    "@google/genai": "https://esm.sh/@google/genai@^0.2.0",
+    "recharts": "https://esm.sh/recharts@^3.6.0",
+    "vite": "https://esm.sh/vite@^7.3.0",
+    "@vitejs/plugin-react": "https://esm.sh/@vitejs/plugin-react@^5.1.2",
+    "react-dom": "https://esm.sh/react-dom@^19.2.3"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body class="antialiased overflow-hidden selection:bg-brand-mint/30 selection:text-brand-obsidian">
+    
+    <!-- Custom Wallpaper Layer -->
+    <div id="app-wallpaper"></div>
+    <!-- Fixed Blur Overlay Layer -->
+    <div id="wallpaper-overlay"></div>
+
+    <!-- Animated Glass Background - WARM/SAND TONES (Darker in Light Mode) -->
+    <div class="blob-bg">
+        <!-- Changed from White/Light Grey to Tan/Clay for light mode -->
+        <div class="blob bg-[#D6D3C9] dark:bg-[#44403C] w-[500px] h-[500px] top-[-10%] left-[-10%] mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob"></div>
+        <div class="blob bg-[#C4C0B6] dark:bg-[#573A28] w-[500px] h-[500px] top-[-10%] right-[-10%] mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob animation-delay-2000"></div>
+        <div class="blob bg-[#E6E4DC] dark:bg-[#292524] w-[600px] h-[600px] -bottom-32 left-20 mix-blend-multiply dark:mix-blend-screen filter blur-3xl animate-blob animation-delay-4000"></div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>

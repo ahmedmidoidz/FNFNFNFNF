@@ -1,0 +1,8 @@
+{
+  "name": "SpendWise",
+  "description": "Your intelligent Algerian financial companion. Track DZD expenses, manage Djam3ias, and get smart advice from Scorpion AI in Derja.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
